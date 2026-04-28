@@ -82,6 +82,39 @@ class LIGHT {
   setColor(colorVal) {
     if (typeof colorVal != "string") return;
     this.color = colorVal;
+    this.replaceLightWithColor(colorVal);
+  }
+  
+  async transitionYellowToRed(duration = 1000) {
+    
+    if (Number.isFinite(duration) || duration < 0 || duration > 100000) return;
+    
+    let interpolation = 0;
+    
+    return new Promise((resolve), function() {
+
+      const start = performance.now();
+      let elapsed;
+      
+      const tick = (now) => {
+        elapsed = now - start;
+        interpolation = Math.min(elapsed / duration, 1);
+        
+        const green = Math.floor(255 * (1 - interpolation));
+        const currentColor = `rgb(255, ${green}, 0)`;
+
+        this.setColor(currentColor);
+        
+        
+        
+        if (interpolation < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          resolve("Success");
+        }
+      }
+      requestAnimationFrame(tick);
+    })
   }
   
   
@@ -90,7 +123,9 @@ class LIGHT {
 LIGHT.setBackGroundColor("blue");
 rectangle(130, 120, 51, 90, "black");
 const myLight = new LIGHT(155, 100, 15, "red");
-const myLight2 = new LIGHT(155, 50, 15, "yellow");
+const myLight2 = new LIGHT(155, 60, 15, "yellow");
+
+myLight2.transitionYellowToRed();
 
 
 
